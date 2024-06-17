@@ -187,7 +187,7 @@ impl Parser {
             return offset;
         }
 
-        self.state = match chunk[offset] as char {
+        self.state = match ch as char {
             'F' => State::FuncOrFile,
             'P' => State::Public,
 
