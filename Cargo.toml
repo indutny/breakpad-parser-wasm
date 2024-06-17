@@ -1,8 +1,11 @@
 [package]
 name = "breakpad-parser-wasm"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Fedor Indutny <238531+indutny@users.noreply.github.com>"]
 edition = "2021"
+description = "WASM parser for breakpad symbol format"
+repository = "https://github.com/indutny/breakpad-parser-wasm"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

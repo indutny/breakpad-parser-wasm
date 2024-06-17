@@ -56,26 +56,35 @@ enum State {
     PublicEnd = 22,
 }
 
-const DEC_TABLE: [u8; 256] = {
-    let mut table = [0xff; 256];
-    let mut i = 0;
-    while i < 10 {
-        table[i + b'0' as usize] = i as u8;
+impl State {
+    fn next(self) -> Self {
+        unsafe { mem::transmute(self as u8 + 1) }
+    }
+}
+
+static DEC_TABLE: [u8; 256] = {
+    let mut output = [0xffu8; 256];
+
+    let mut i = b'0';
+    while i <= b'9' {
+        output[i as usize] = i as u8 - b'0';
         i += 1;
     }
-    table
+
+    output
 };
 
-const HEX_TABLE: [u8; 256] = {
-    let mut table = DEC_TABLE;
-    let mut i = 0;
-    while i < 6 {
-        table[i + b'a' as usize] = i as u8 + 10;
+static HEX_TABLE: [u8; 256] = {
+    let mut output = DEC_TABLE;
+
+    let mut i = b'a';
+    while i <= b'f' {
+        output[i as usize] = i - b'a' + 0x0a;
         i += 1;
     }
-    table
-};
 
+    output
+};
 
 #[wasm_bindgen]
 struct Parser {
@@ -169,7 +178,7 @@ impl Parser {
             return offset;
         }
 
-        self.state = match chunk[offset] as char {
+        self.state = match ch as char {
             'F' => State::FuncOrFile,
             'P' => State::Public,
 
@@ -197,7 +206,7 @@ impl Parser {
                 self.row[self.row_pos] = int_value;
                 self.row_pos += 1;
                 self.int_value = 0;
-                self.bump_state();
+                self.state = self.state.next();
                 return i + 1;
             }
 
@@ -215,7 +224,7 @@ impl Parser {
                 self.row[self.row_pos] = int_value;
                 self.row_pos += 1;
                 self.int_value = 0;
-                self.bump_state();
+                self.state = self.state.next();
                 return i + 1;
             }
 
@@ -228,7 +237,7 @@ impl Parser {
     fn parse_str(&mut self, chunk: &[u8], offset: usize) -> usize {
         for i in offset..chunk.len() {
             if chunk[i] as char == '\n' {
-                self.bump_state();
+                self.state = self.state.next();
                 self.api.on_str_value(&chunk[offset..i]);
                 return i + 1;
             }
@@ -240,7 +249,7 @@ impl Parser {
     fn skip_until_digit(&mut self, chunk: &[u8], offset: usize) -> usize {
         for i in offset..chunk.len() {
             if HEX_TABLE[chunk[i] as usize] != 0xff {
-                self.bump_state();
+                self.state = self.state.next();
                 return i;
             }
         }
@@ -255,10 +264,6 @@ impl Parser {
             }
         }
         return chunk.len();
-    }
-
-    fn bump_state(&mut self) {
-        self.state = unsafe { mem::transmute(self.state as u8 + 1) }
     }
 
     fn on_line_end(&mut self) {
