@@ -7,20 +7,6 @@ const DECODER = new TextDecoder();
 async function parse(chunks) {
   const result = [];
 
-  function translate(args) {
-    return args.map((arg) => {
-      if (typeof arg === 'number') {
-        return arg;
-      }
-
-      if (typeof arg === 'string' ){
-        return arg;
-      }
-
-      throw new Error(`Unexpected arg: ${arg}`);
-    });
-  }
-
   let strBuffer = '';
 
   const p = new Parser({
