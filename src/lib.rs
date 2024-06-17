@@ -178,9 +178,9 @@ impl Parser {
             return offset;
         }
 
-        self.state = match ch as char {
-            'F' => State::FuncOrFile,
-            'P' => State::Public,
+        self.state = match ch {
+            b'F' => State::FuncOrFile,
+            b'P' => State::Public,
 
             // Likely STACK
             _ => State::Skip,
@@ -190,9 +190,9 @@ impl Parser {
     }
 
     fn parse_func_or_file(&mut self, chunk: &[u8], offset: usize) -> usize {
-        self.state = match chunk[offset] as char {
-            'U' => State::Func,
-            'I' => State::File,
+        self.state = match chunk[offset] {
+            b'U' => State::Func,
+            b'I' => State::File,
             _ => State::Skip,
         };
         offset + 1
@@ -236,7 +236,7 @@ impl Parser {
 
     fn parse_str(&mut self, chunk: &[u8], offset: usize) -> usize {
         for i in offset..chunk.len() {
-            if chunk[i] as char == '\n' {
+            if chunk[i] == b'\n' {
                 self.state = self.state.next();
                 self.api.on_str_value(&chunk[offset..i]);
                 return i + 1;
@@ -258,7 +258,7 @@ impl Parser {
 
     fn skip_past_newline(&mut self, chunk: &[u8], offset: usize) -> usize {
         for i in offset..chunk.len() {
-            if chunk[i] as char == '\n' {
+            if chunk[i] == b'\n' {
                 self.state = State::Start;
                 return i + 1;
             }
