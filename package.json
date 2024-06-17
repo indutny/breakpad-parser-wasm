@@ -1,0 +1,18 @@
+{
+  "name": "breakpad-rs",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "author": "Fedor Indutny <238531+indutny@users.noreply.github.com>",
+  "license": "MIT",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "ava": "^6.1.3"
+  }
+}
