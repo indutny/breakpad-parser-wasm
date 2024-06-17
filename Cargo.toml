@@ -15,7 +15,6 @@ default = []
 
 [dependencies]
 wasm-bindgen = "0.2.84"
-wee_alloc = "0.4.5"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
@@ -24,3 +23,7 @@ wasm-bindgen-test = "0.3.34"
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 lto = true
+
+[dependencies.wee_alloc]
+version = "0.4.5"
+default-features = false
