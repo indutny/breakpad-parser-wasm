@@ -3,6 +3,7 @@ import test from 'ava';
 import { Parser } from '../pkg/breakpad_parser_wasm.js';
 
 const DECODER = new TextDecoder();
+const ENCODER = new TextEncoder();
 
 async function parse(chunks) {
   const result = [];
@@ -27,7 +28,7 @@ async function parse(chunks) {
   });
 
   for (const chunk of chunks) {
-    p.parse(Buffer.from(chunk));
+    p.parse(ENCODER.encode(chunk));
   }
   p.finish();
   p.free();
