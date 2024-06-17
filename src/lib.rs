@@ -62,33 +62,24 @@ impl State {
     }
 }
 
-static HEX_TABLE: [u8; 256] = {
+static DEC_TABLE: [u8; 256] = {
     let mut output = [0xffu8; 256];
 
-    // 0-9
-    let mut i = 0x30;
-    while i <= 0x39 {
-        output[i] = i as u8 - 0x30;
-        i += 1;
-    }
-
-    // a-f
-    i = 0x61;
-    while i <= 0x66 {
-        output[i] = i as u8 - 0x61 + 0x0a;
+    let mut i = b'0';
+    while i <= b'9' {
+        output[i as usize] = i as u8 - b'0';
         i += 1;
     }
 
     output
 };
 
-static DEC_TABLE: [u8; 256] = {
-    let mut output = [0xffu8; 256];
+static HEX_TABLE: [u8; 256] = {
+    let mut output = DEC_TABLE;
 
-    // 0-9
-    let mut i = 0x30;
-    while i <= 0x39 {
-        output[i] = i as u8 - 0x30;
+    let mut i = b'a';
+    while i <= b'f' {
+        output[i as usize] = i - b'a' + 0x0a;
         i += 1;
     }
 
