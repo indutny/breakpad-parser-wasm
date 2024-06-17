@@ -22,6 +22,7 @@ extern "C" {
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
+#[repr(u8)]
 enum State {
     Start = 0,
 
