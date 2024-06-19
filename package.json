@@ -2,7 +2,7 @@
   "name": "breakpad-rs",
   "private": true,
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Fedor Indutny <238531+indutny@users.noreply.github.com>",
   "license": "MIT",
   "directories": {
