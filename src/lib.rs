@@ -66,7 +66,7 @@ const DEC_TABLE: [u8; 256] = {
 
     let mut i = b'0';
     while i <= b'9' {
-        output[i as usize] = i as u8 - b'0';
+        output[i as usize] = i - b'0';
         i += 1;
     }
 
@@ -225,7 +225,7 @@ impl Parser {
                 }
             };
 
-            int_value = (int_value << 4) | (d as u32);
+            int_value = (int_value << 4) | u32::from(d);
         }
         self.row[self.row_pos as usize] = int_value;
         chunk.len()
@@ -244,7 +244,7 @@ impl Parser {
                 }
             };
 
-            int_value = (int_value * 10) + d as u32;
+            int_value = (int_value * 10) + u32::from(d);
         }
         self.row[self.row_pos as usize] = int_value;
         chunk.len()
@@ -259,7 +259,7 @@ impl Parser {
             }
         }
         self.api.on_str_value(&chunk[offset..chunk.len()]);
-        return chunk.len();
+        chunk.len()
     }
 
     fn skip_until_digit(&mut self, chunk: &[u8], offset: usize) -> usize {
@@ -269,7 +269,7 @@ impl Parser {
                 return i;
             }
         }
-        return chunk.len();
+        chunk.len()
     }
 
     fn skip_past_newline(&mut self, chunk: &[u8], offset: usize) -> usize {
@@ -279,7 +279,7 @@ impl Parser {
                 return i + 1;
             }
         }
-        return chunk.len();
+        chunk.len()
     }
 
     fn on_line_end(&mut self) {
