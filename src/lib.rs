@@ -106,9 +106,8 @@ const fn hex_value(ch: u8) -> Option<u8> {
 #[wasm_bindgen]
 struct Parser {
     state: State,
-    int_value: u32,
     row: [u32; 4],
-    row_pos: usize,
+    row_pos: u8,
     api: Api,
 }
 
@@ -118,7 +117,6 @@ impl Parser {
     pub fn new(api: Api) -> Self {
         Self {
             state: State::Start,
-            int_value: 0,
             row: [0; 4],
             row_pos: 0,
             api,
@@ -216,14 +214,12 @@ impl Parser {
     }
 
     fn parse_hex(&mut self, chunk: &[u8], offset: usize) -> usize {
-        let mut int_value = self.int_value;
+        let mut int_value = self.row[self.row_pos as usize];
         for i in offset..chunk.len() {
             let d = match hex_value(chunk[i]) {
                 Some(d) => d,
                 None => {
-                    self.row[self.row_pos] = int_value;
                     self.row_pos += 1;
-                    self.int_value = 0;
                     self.state = self.state.next();
                     return i + 1;
                 }
@@ -231,19 +227,18 @@ impl Parser {
 
             int_value = (int_value << 4) | (d as u32);
         }
-        self.int_value = int_value;
+        self.row[self.row_pos as usize] = int_value;
         chunk.len()
     }
 
     fn parse_dec(&mut self, chunk: &[u8], offset: usize) -> usize {
-        let mut int_value = self.int_value;
+        let mut int_value = self.row[self.row_pos as usize];
         for i in offset..chunk.len() {
             let d = match dec_value(chunk[i]) {
                 Some(d) => d,
                 None => {
-                    self.row[self.row_pos] = int_value;
+                    self.row[self.row_pos as usize] = int_value;
                     self.row_pos += 1;
-                    self.int_value = 0;
                     self.state = self.state.next();
                     return i + 1;
                 }
@@ -251,7 +246,7 @@ impl Parser {
 
             int_value = (int_value * 10) + d as u32;
         }
-        self.int_value = int_value;
+        self.row[self.row_pos as usize] = int_value;
         chunk.len()
     }
 
@@ -310,6 +305,7 @@ impl Parser {
 
     fn on_end(&mut self) {
         self.row_pos = 0;
+        self.row = [0; 4];
         self.state = State::Start;
     }
 }
