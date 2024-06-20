@@ -219,6 +219,7 @@ impl Parser {
             let d = match hex_value(chunk[i]) {
                 Some(d) => d,
                 None => {
+                    self.row[self.row_pos as usize] = int_value;
                     self.row_pos += 1;
                     self.state = self.state.next();
                     return i + 1;
@@ -283,24 +284,24 @@ impl Parser {
     }
 
     fn on_line_end(&mut self) {
-        self.on_end();
         self.api
             .on_line(self.row[0], self.row[1], self.row[2], self.row[3]);
+        self.on_end();
     }
 
     fn on_func_end(&mut self) {
-        self.on_end();
         self.api.on_func(self.row[0], self.row[1], self.row[2]);
+        self.on_end();
     }
 
     fn on_file_end(&mut self) {
-        self.on_end();
         self.api.on_file(self.row[0]);
+        self.on_end();
     }
 
     fn on_public_end(&mut self) {
-        self.on_end();
         self.api.on_public(self.row[0], self.row[1]);
+        self.on_end();
     }
 
     fn on_end(&mut self) {
