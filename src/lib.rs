@@ -2,6 +2,7 @@
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 use core::mem;
+use memchr::memchr;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -252,12 +253,10 @@ impl Parser {
     }
 
     fn parse_str(&mut self, chunk: &[u8], offset: usize) -> usize {
-        for i in offset..chunk.len() {
-            if chunk[i] == b'\n' {
-                self.state = self.state.next();
-                self.api.on_str_value(&chunk[offset..i]);
-                return i + 1;
-            }
+        if let Some(i) = memchr(b'\n', &chunk[offset..]) {
+            self.state = self.state.next();
+            self.api.on_str_value(&chunk[offset..(offset + i)]);
+            return offset + i + 1;
         }
         self.api.on_str_value(&chunk[offset..chunk.len()]);
         chunk.len()
@@ -274,11 +273,9 @@ impl Parser {
     }
 
     fn skip_past_newline(&mut self, chunk: &[u8], offset: usize) -> usize {
-        for i in offset..chunk.len() {
-            if chunk[i] == b'\n' {
-                self.state = State::Start;
-                return i + 1;
-            }
+        if let Some(i) = memchr(b'\n', &chunk[offset..]) {
+            self.state = State::Start;
+            return offset + i + 1;
         }
         chunk.len()
     }
